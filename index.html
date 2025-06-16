@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Downgrade</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>图片自动降级示例</h1>
+      <p>
+        使用不同浏览器打开此页面，根据浏览器支持的图片格式不同，会自动向下加载不同的图片
+      </p>
+      <div class="image-container">
+        <picture id="image">
+          <source srcset="./img.jp2" type="image/jp2" />
+          <source srcset="./img.avif" type="image/avif" />
+          <source srcset="./img.webp" type="image/webp" />
+          <img src="./img.png" type="image/png" />
+        </picture>
+        <div>当前显示的图片地址：<span class="image-url-value"></span></div>
+      </div>
+    </div>
+    <script>
+      // 监听所有图片请求（包括<picture>中的资源）
+      window.addEventListener("load", () => {
+        const performanceEntries = performance.getEntriesByType("resource");
+        const imageEntries = performanceEntries.filter((entry) => {
+          return (
+            entry.initiatorType === "img" || entry.initiatorType === "picture"
+          );
+        });
+
+        const imageUrlValue = document.querySelector(".image-url-value");
+        // 遍历请求，找到实际加载的图片（可能有多个，取第一个匹配的）
+        imageEntries.forEach((entry) => {
+          const url = entry.name; // 实际加载的图片地址
+          imageUrlValue.textContent = url;
+        });
+      });
+    </script>
+  </body>
+</html>
